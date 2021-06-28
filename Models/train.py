@@ -12,12 +12,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras import callbacks
 from tensorflow.keras import models
 from custom_metric import F1_score
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.stem import PorterStemmer
-import nltk
-nltk.download('punkt')
-nltk.download('wordnet')
+from text_processing import lemm_text, stemm_text
 
 ########### Import dataframe ##########
 df  = read_csv('/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/Data/Artemis Official Data/artemis_dataset_release_v0.csv')
@@ -26,21 +21,9 @@ df  = read_csv('/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/Data/A
 df['utterance']=df['utterance'].str.lower()
 
 ########### Lemmitize: returns the word to its lemma. E.g "is" becomes "be".
-def lemm_text(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    return ' '.join(tokens)
-
 df['utterance'] = list(map(lemm_text, df['utterance']))
 
 ########### Stemming: reduces the word to its stem. E.g "cooking" becomes "cook" and "played" becomes "play".
-def stemm_text(text):
-    tokens = word_tokenize(text)
-    p_stemmer = PorterStemmer()
-    tokens = [p_stemmer.stem(word) for word in tokens]
-    return ' '.join(tokens)
-
 df['utterance'] = list(map(stemm_text, df['utterance']))
 
 ########### Train-test split dataset ###########

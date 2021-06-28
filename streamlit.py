@@ -223,8 +223,8 @@ with st.sidebar.beta_expander("📩 Contact"):
 st.sidebar.title(' ')
 st.sidebar.title('Filters')
 with st.sidebar.beta_expander("🌡 Objectivity Scale"):
-    min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=3)
-    st.write("With 3 as default setting, if your predicted sentiment is 'awe', only artworks with at least 3 people labeling them with 'awe' will be shown.")
+    min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=5)
+    st.write("With 5 as default setting, if your predicted sentiment is 'awe', only artworks with at least 5 people labeling them with 'awe' will be shown.")
     st.write('The higher you go, the more *objective* but smaller the result pool will be.')
 with st.sidebar.beta_expander(("🔎 Advanced Search")):
     artists = st.multiselect('Choose artists', artist_list)

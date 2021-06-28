@@ -4,6 +4,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 import nltk
 nltk.download('wordnet')
+nltk.download('punkt')
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
