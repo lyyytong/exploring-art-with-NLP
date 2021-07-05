@@ -1,15 +1,11 @@
 ########## Import librarires ##########
-import pickle
 import streamlit as st
 import pandas as pd
 import requests
 from io import BytesIO
 import re
 from bs4 import BeautifulSoup
-import tensorflow as tf
-from text_processing import lemm_text, stemm_text
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from model_metric import F1_score, bi_lstm, labels
+from preprocess_predict import predict, labels
 
 ########## Load dataframe to be used for emotion-to-artwork query ##########
 @st.cache(show_spinner=False)
@@ -20,32 +16,6 @@ def load_df(df_path):
     return df, style_list, artist_list
 
 df, style_list, artist_list = load_df('edited_artemis_dataset.csv')
-
-########## Functions to preprocess inputs ##########
-max_length = 200
-trunc_type = 'pre'
-padding_type = 'pre'
-
-# Load tokenizer
-@st.cache(show_spinner=False)
-def load_tok(tok_path):
-    with open(tok_path, 'rb') as handle:
-        tokenizer = pickle.load(handle)
-    return tokenizer
-
-tokenizer = load_tok('tokenizer.pickle')
-
-@st.cache(show_spinner=False)
-def preprocess_text(texts):
-    inputs = texts.lower()
-    inputs = lemm_text(inputs)
-    inputs = stemm_text(inputs)
-    sequence = tokenizer.texts_to_sequences([inputs])
-    padded_sequence = pad_sequences(sequence,
-                                    maxlen=max_length,
-                                    padding=padding_type,
-                                    truncating=trunc_type)
-    return padded_sequence
 
 ########## Functions to scrape & display artwork image & information from WikiArt ##########
 base_web = 'https://www.wikiart.org/'
@@ -271,8 +241,7 @@ texts = st.text_input("Describe a mental image or sensation 🖼", "sand dunes a
 
 # Predict & display results -----------
 if texts:
-    padded_sequence = preprocess_text(texts)
-    pred = bi_lstm.predict(padded_sequence)
+    pred = predict(texts)
 
     # Result & proba to dictionary to be sorted
     result_dict = {}
