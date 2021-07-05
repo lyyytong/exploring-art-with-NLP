@@ -34,10 +34,6 @@ class F1_score(tf.keras.metrics.Metric):
 
 bi_lstm = tf.keras.models.load_model("bi_lstm.h5",
                                      custom_objects={'F1_score':F1_score})
-    
-# bi_lstm.compile(optimizer='adam',
-#                 loss='categorical_crossentropy',
-#                 metrics=[F1_score()])
 
 labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
           'excitement', 'fear', 'sadness', 'something else']
