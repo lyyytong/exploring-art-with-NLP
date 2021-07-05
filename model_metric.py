@@ -3,6 +3,8 @@
 # (NOT only giving the f1 score for each batch which isn't really the best metric when we really want the f1 score of the all the data)
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import models
+
 
 def create_f1():
     def f1_function(y_true, y_pred):
@@ -32,3 +34,13 @@ class F1_score(keras.metrics.Metric):
         recall = self.tp_count / self.all_possible_positives
         f1 = 2*(precision*recall)/(precision+recall)
         return f1
+
+bi_lstm = models.load_model('bi_lstm.h5',
+                            custom_objects={'F1_score':F1_score})
+    
+bi_lstm.compile(optimizer='adam',
+                loss='categorical_crossentropy',
+                metrics=[F1_score()])
+
+labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
+            'excitement', 'fear', 'sadness', 'something else']
