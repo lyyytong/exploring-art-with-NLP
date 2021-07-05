@@ -5,7 +5,7 @@ import requests
 from io import BytesIO
 import re
 from bs4 import BeautifulSoup
-from preprocess_predict import predict, labels
+from preprocess_predict import preprocess_predict, labels
 
 ########## Load dataframe to be used for emotion-to-artwork query ##########
 @st.cache(show_spinner=False)
@@ -241,7 +241,7 @@ texts = st.text_input("Describe a mental image or sensation 🖼", "sand dunes a
 
 # Predict & display results -----------
 if texts:
-    pred = predict(texts)
+    pred = preprocess_predict(texts)
 
     # Result & proba to dictionary to be sorted
     result_dict = {}
