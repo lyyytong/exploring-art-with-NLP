@@ -1,23 +1,79 @@
 ########## Import librarires ##########
+import pickle
 import streamlit as st
 import pandas as pd
 import requests
 from io import BytesIO
 import re
 from bs4 import BeautifulSoup
-from model import bi_lstm, labels
-from text_processing import preprocess_text
+import tensorflow as tf
+from tensorflow.keras import models
+from text_processing import lemm_text, stemm_text
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from custom_metric import F1_score
 
 ########## Load dataframe to be used for emotion-to-artwork query ##########
-df = pd.read_csv('/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/Data/edited_artemis_dataset.csv')
-style_list = df['art_style'].unique()
-artist_list = df['artist'].unique()
+df_path = '/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/Data/edited_artemis_dataset.csv'
+
+@st.cache(show_spinner=False)
+def load_df(df_path):
+    df = pd.read_csv(df_path)
+    style_list = df['art_style'].unique()
+    artist_list = df['artist'].unique()
+    return df, style_list, artist_list
+
+df, style_list, artist_list = load_df(df_path)
+
+########## Load sentiment-analysis model ##########
+model_path = '/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/Models/9_class_Stem&Lemm_BiLSTM_4.h5'
+
+@st.cache(allow_output_mutation=True, show_spinner=False)
+def load_model(model_path):
+    bi_lstm = models.load_model(model_path, custom_objects={'F1_score':F1_score})
+    
+    bi_lstm.compile(optimizer='adam',
+                loss='categorical_crossentropy',
+                metrics=[F1_score()])
+
+    labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
+          'excitement', 'fear', 'sadness', 'something else']
+
+    return bi_lstm, labels
+
+bi_lstm, labels = load_model(model_path)
+
+########## Functions to preprocess inputs ##########
+max_length = 200
+trunc_type = 'pre'
+padding_type = 'pre'
+
+# Load tokenizer
+tok_path = '/Users/lysmacbookpro/Desktop/CS Work/W11-12 Final Project/tokenizer.pickle'
+@st.cache(show_spinner=False)
+def load_tok(tok_path):
+    with open(tok_path, 'rb') as handle:
+        tokenizer = pickle.load(handle)
+    return tokenizer
+
+tokenizer = load_tok(tok_path)
+
+@st.cache(show_spinner=False)
+def preprocess_text(texts):
+    inputs = texts.lower()
+    inputs = lemm_text(inputs)
+    inputs = stemm_text(inputs)
+    sequence = tokenizer.texts_to_sequences([inputs])
+    padded_sequence = pad_sequences(sequence,
+                                    maxlen=max_length,
+                                    padding=padding_type,
+                                    truncating=trunc_type)
+    return padded_sequence
 
 ########## Functions to scrape & display artwork image & information from WikiArt ##########
 base_web = 'https://www.wikiart.org/'
 
 #----------------------------
-@st.cache
+@st.cache(show_spinner=False)
 def query_df(emotion, artists, styles, min_votes):
     if len(artists)!=0 and len(styles)!=0:
         filtered = df[(df['emotion']==emotion)&(df['artist'].isin(artists))&(df['art_style'].isin(styles))]
@@ -86,7 +142,7 @@ def scrape_artwork(emotion, artists, styles, min_votes):
     return utterance, title, artist_name, artist_url, image_url, date_created, location_created, style, genre, location, desc
 
 #----------------------------
-@st.cache
+@st.cache(show_spinner=False)
 def scrape_artist(artist_url):
     artist_r = requests.get(artist_url)
     artist_soup = BeautifulSoup(artist_r.text, 'html.parser')
@@ -116,7 +172,7 @@ def scrape_artist(artist_url):
     return artist_full_name, artist_img_url, birthday, birthplace, deathday, deathplace, nationality, art_movement, bio
 
 #----------------------------
-@st.cache
+@st.cache(show_spinner=False)
 def scrape_style(style):
     style = style.lower().replace(' ', '-')
     style_url = f'https://www.wikiart.org/en/artists-by-art-movement/{style}'
