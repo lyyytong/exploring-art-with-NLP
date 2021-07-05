@@ -198,7 +198,7 @@ def show_results(emotion, artists, styles, min_votes):
             st.write(s)
     
     with st.beta_expander(f'❓ Why this evokes "{emotion}"'):
-        st.write(f'Explanations by people who associated the artwork with "{emotion}":')
+        st.write(f'Explanations by real people who viewed the artwork:')
         for u in utterance:
             st.write(">", u)
         st.write(' ')
