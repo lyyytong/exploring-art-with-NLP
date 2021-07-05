@@ -25,11 +25,13 @@ df, style_list, artist_list = load_df('edited_artemis_dataset.csv')
 ########## Load sentiment-analysis model ##########
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def load_model(model_path):
-    bi_lstm = models.load_model(model_path, custom_objects={'F1_score':F1_score})
+    bi_lstm = models.load_model(model_path,
+                                custom_objects={'F1_score':F1_score},
+                                compile=True)
     
-    bi_lstm.compile(optimizer='adam',
-                    loss='categorical_crossentropy',
-                    metrics=[F1_score()])
+    # bi_lstm.compile(optimizer='adam',
+    #                 loss='categorical_crossentropy',
+    #                 metrics=[F1_score()])
 
     labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
               'excitement', 'fear', 'sadness', 'something else']
