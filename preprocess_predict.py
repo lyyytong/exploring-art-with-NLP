@@ -1,4 +1,4 @@
-from tensorflow.keras import load_model
+from tensorflow.keras import models
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from custom_metric import F1_score
 import pickle
@@ -31,7 +31,7 @@ def stemm_text(text):
     return ' '.join(tokens)
 
 # Load model & function to predict
-bi_lstm = load_model("bi_lstm.h5",
+bi_lstm = models.load_model("bi_lstm.h5",
           custom_objects={'F1_score':F1_score},
           compile=True)
 
