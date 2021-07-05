@@ -58,7 +58,8 @@ def stemm_text(text):
 
 # Load model & function to predict
 bi_lstm = tf.keras.models.load_model("bi_lstm.h5",
-                                     custom_objects={'F1_score':F1_score})
+                                     custom_objects={'F1_score':F1_score},
+                                     compile=True)
 
 labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
           'excitement', 'fear', 'sadness', 'something else']
