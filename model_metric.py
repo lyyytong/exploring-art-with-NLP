@@ -2,9 +2,6 @@
 # keeping track of true positives, predicted positives, and all possible positives throughout the whole epoch and then calculating the f1 score at the end of the epoch
 # (NOT only giving the f1 score for each batch which isn't really the best metric when we really want the f1 score of the all the data)
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import models
-
 
 def create_f1():
     def f1_function(y_true, y_pred):
@@ -15,7 +12,7 @@ def create_f1():
         return tp, predicted_positives, possible_positives
     return f1_function
 
-class F1_score(keras.metrics.Metric):
+class F1_score(tf.keras.metrics.Metric):
     def __init__(self, **kwargs):
         super().__init__(**kwargs) # handles base args (e.g., dtype)
         self.f1_function = create_f1()
@@ -35,12 +32,12 @@ class F1_score(keras.metrics.Metric):
         f1 = 2*(precision*recall)/(precision+recall)
         return f1
 
-bi_lstm = models.load_model('bi_lstm.h5',
-                            custom_objects={'F1_score':F1_score})
+bi_lstm = tf.keras.models.load_model("bi_lstm.h5",
+                                     custom_objects={'F1_score':F1_score})
     
-bi_lstm.compile(optimizer='adam',
-                loss='categorical_crossentropy',
-                metrics=[F1_score()])
+# bi_lstm.compile(optimizer='adam',
+#                 loss='categorical_crossentropy',
+#                 metrics=[F1_score()])
 
 labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
-            'excitement', 'fear', 'sadness', 'something else']
+          'excitement', 'fear', 'sadness', 'something else']
