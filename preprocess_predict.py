@@ -4,6 +4,9 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
 
 # Custom F1 metric
 def create_f1():
