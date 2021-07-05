@@ -29,7 +29,7 @@ def query_df(emotion, artists, styles, min_votes):
         filtered = df[df['emotion']==emotion]
     
     if filtered.empty:
-        message = 'No artworks found. Please widen your search. Getting an artwork outside of your search for now.'
+        message = 'No artworks found. Please widen your artist and/or style search. Getting an artwork outside of your search for now.'
         artists = []
         styles = []
         results = None
@@ -38,7 +38,7 @@ def query_df(emotion, artists, styles, min_votes):
         results = filtered_count[filtered_count['count']>= min_votes]
         if results.empty:
             max_value = filtered_count['count'].max()
-            message = f'No artworks found. Please decrease the number of votes per label. Getting an artwork at max available value ({max_value}) for now.'
+            message = f'No artworks found. Please lower the consensus scale. Getting an artwork at max available value ({max_value}) for now.'
             min_votes = max_value
         else:
             message = ''
@@ -135,7 +135,8 @@ def scrape_style(style):
 def show_img(url):
     img_r = requests.get(url)
     img_bytes = BytesIO(img_r.content)
-    st.image(img_bytes)
+    st.image(img_bytes,
+             use_column_width='auto')
 
 #----------------------------
 def show_results(emotion, artists, styles, min_votes):
@@ -145,6 +146,7 @@ def show_results(emotion, artists, styles, min_votes):
     else:
         st.subheader(f"{title}, {artist_name}")
     
+    st.write(" ")
     show_img(image_url)
 
     st.write("**Title:**", title)
@@ -222,10 +224,10 @@ with st.sidebar.beta_expander("📩 Contact"):
     "lyyytong@gmail.com"
 st.sidebar.title(' ')
 st.sidebar.title('Filters')
-with st.sidebar.beta_expander("🌡 Objectivity Scale"):
-    min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=5)
-    st.write("With 5 as default setting, if your predicted sentiment is 'awe', only artworks with at least 5 people labeling them with 'awe' will be shown.")
-    st.write('The higher you go, the more *objective* but smaller the result pool will be.')
+with st.sidebar.beta_expander("🍺 Consensus Scale"):
+    min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=3)
+    st.write("With 3 as default setting, if your predicted sentiment is 'excitement', only artworks with at least 3 people labeling them with 'excitement' will be shown.")
+    st.write("The higher you go, the more people have to agree the artwork evokes your predicted sentiment for it to be shown, but the smaller the result pool will be.")
 with st.sidebar.beta_expander(("🔎 Advanced Search")):
     artists = st.multiselect('Choose artists', artist_list)
     styles = st.multiselect('Choose styles', style_list)
