@@ -13,8 +13,6 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from custom_metric import F1_score
 
 ########## Load dataframe to be used for emotion-to-artwork query ##########
-df_path = 'Data/edited_artemis_dataset.csv'
-
 @st.cache(show_spinner=False)
 def load_df(df_path):
     df = pd.read_csv(df_path)
@@ -22,25 +20,23 @@ def load_df(df_path):
     artist_list = df['artist'].unique()
     return df, style_list, artist_list
 
-df, style_list, artist_list = load_df(df_path)
+df, style_list, artist_list = load_df('edited_artemis_dataset.csv')
 
 ########## Load sentiment-analysis model ##########
-model_path = 'Models/9_class_Stem&Lemm_BiLSTM_4.h5'
-
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def load_model(model_path):
     bi_lstm = models.load_model(model_path, custom_objects={'F1_score':F1_score})
     
     bi_lstm.compile(optimizer='adam',
-                loss='categorical_crossentropy',
-                metrics=[F1_score()])
+                    loss='categorical_crossentropy',
+                    metrics=[F1_score()])
 
     labels = ['amusement', 'anger', 'awe', 'contentment', 'disgust',
-          'excitement', 'fear', 'sadness', 'something else']
+              'excitement', 'fear', 'sadness', 'something else']
 
     return bi_lstm, labels
 
-bi_lstm, labels = load_model(model_path)
+bi_lstm, labels = load_model('bi_lstm.h5')
 
 ########## Functions to preprocess inputs ##########
 max_length = 200
@@ -48,14 +44,13 @@ trunc_type = 'pre'
 padding_type = 'pre'
 
 # Load tokenizer
-tok_path = 'tokenizer.pickle'
 @st.cache(show_spinner=False)
 def load_tok(tok_path):
     with open(tok_path, 'rb') as handle:
         tokenizer = pickle.load(handle)
     return tokenizer
 
-tokenizer = load_tok(tok_path)
+tokenizer = load_tok('tokenizer.pickle')
 
 @st.cache(show_spinner=False)
 def preprocess_text(texts):
