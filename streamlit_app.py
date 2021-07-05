@@ -13,7 +13,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from custom_metric import F1_score
 
 ########## Load dataframe to be used for emotion-to-artwork query ##########
-df_path = '/Data/edited_artemis_dataset.csv'
+df_path = 'Data/edited_artemis_dataset.csv'
 
 @st.cache(show_spinner=False)
 def load_df(df_path):
@@ -25,7 +25,7 @@ def load_df(df_path):
 df, style_list, artist_list = load_df(df_path)
 
 ########## Load sentiment-analysis model ##########
-model_path = '/Models/9_class_Stem&Lemm_BiLSTM_4.h5'
+model_path = 'Models/9_class_Stem&Lemm_BiLSTM_4.h5'
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def load_model(model_path):
@@ -48,7 +48,7 @@ trunc_type = 'pre'
 padding_type = 'pre'
 
 # Load tokenizer
-tok_path = '/tokenizer.pickle'
+tok_path = 'tokenizer.pickle'
 @st.cache(show_spinner=False)
 def load_tok(tok_path):
     with open(tok_path, 'rb') as handle:
