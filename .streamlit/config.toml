@@ -180,13 +180,13 @@ keyPrefix = ""
 
 [theme]
 # Primary accent color for interactive elements.
-primaryColor="#A100BF"
+primaryColor="#7C2DF9"
 
 # Background color for the main content area.
 backgroundColor="#FFFFFF"
 
 # Background color used for the sidebar and most interactive widgets.
-secondaryBackgroundColor="#E3FFDE"
+secondaryBackgroundColor="#E3FBE3"
 
 # Color used for almost all text.
 textColor="#262730"
