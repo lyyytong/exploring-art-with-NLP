@@ -41,9 +41,8 @@ def query_df(emotion, artists, styles, min_votes):
         filtered_count = filtered.groupby('painting')[['utterance']].count().reset_index().rename(columns={'utterance':'count'})
         results = filtered_count[filtered_count['count']>= min_votes]
         if results.empty:
-            max_value = filtered_count['count'].max()
-            message = f'No artworks found. Please lower the consensus scale. Getting an artwork at max available value ({max_value}) for now.'
-            min_votes = max_value
+            min_votes = filtered_count['count'].max()
+            message = f'No artworks found. Please lower the consensus scale. Getting an artwork at max available value ({min_votes}) for now.'
         else:
             message = ''
 
@@ -73,6 +72,7 @@ def scrape_artwork(emotion, artists, styles, min_votes):
     artist_name = artwork_soup.h2.text
     artist_url = base_web  + artwork_soup.h2.a['href']
     image_url = artwork_soup.img['src']
+    image_url_hd = f"https://uploads2.wikiart.org/images/{term}.jpg!HD.jpg"
     date_created = artwork_soup.find('span', {'itemprop':'dateCreated'})
     if date_created:
         date_created = date_created.text
@@ -87,7 +87,7 @@ def scrape_artwork(emotion, artists, styles, min_votes):
     if desc:
         desc = desc.text
 
-    return utterance, title, artist_name, artist_url, image_url, date_created, location_created, style, genre, location, desc
+    return utterance, title, artist_name, artist_url, image_url, image_url_hd, date_created, location_created, style, genre, location, desc
 
 #----------------------------
 @st.cache(show_spinner=False)
@@ -136,22 +136,23 @@ def scrape_style(style):
     return style_desc
 
 #----------------------------
-def show_img(url):
-    img_r = requests.get(url)
+def show_img(url_hd, url=None):
+    img_r = requests.get(url_hd)
+    if img_r.status_code!=200:
+        img_r = requests.get(url)
     img_bytes = BytesIO(img_r.content)
-    st.image(img_bytes,
-             use_column_width='auto')
+    st.image(img_bytes)
 
 #----------------------------
 def show_results(emotion, artists, styles, min_votes):
-    utterance, title, artist_name, artist_url, image_url, date_created, location_created, style, genre, location, desc = scrape_artwork(emotion, artists, styles, min_votes)
+    utterance, title, artist_name, artist_url, image_url, image_url_hd, date_created, location_created, style, genre, location, desc = scrape_artwork(emotion, artists, styles, min_votes)
     if date_created:
         st.subheader(f"{title} ({date_created}), {artist_name}")
     else:
         st.subheader(f"{title}, {artist_name}")
     
     st.write(" ")
-    show_img(image_url)
+    show_img(image_url_hd, image_url)
 
     st.write("**Title:**", title)
     st.write("**Artist:**", artist_name)
@@ -169,8 +170,8 @@ def show_results(emotion, artists, styles, min_votes):
     
     with st.beta_expander('🧑‍🎨 See artist'):
         col1, col2 = st.beta_columns(2)
+        artist_full_name, artist_img_url, birthday, birthplace, deathday, deathplace, nationality, art_movement, bio = scrape_artist(artist_url)
         with col1:
-            artist_full_name, artist_img_url, birthday, birthplace, deathday, deathplace, nationality, art_movement, bio = scrape_artist(artist_url)
             show_img(artist_img_url)
         with col2:
             st.write("**Name:**", artist_name)
