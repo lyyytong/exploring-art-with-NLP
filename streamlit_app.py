@@ -209,7 +209,7 @@ def show_results(emotion, artists, styles, min_votes):
         for u in utterance:
             st.write(">", u)
         st.write(' ')
-        st.write(":warning: *Note: These labels & comments are part of the ArtEmis dataset. The dataset consists of 454K such attributions & explanations, provided by 6K human annotators on 80K artworks. The comments therefore are highly subjective, and may not reflect how you personally feel about the artwork.*")
+        st.write(":warning: These comments are part of the ArtEmis dataset. The dataset consists of 454K sentiment attributions, provided by 6K *human* annotators on 80K artworks. The comments therefore are highly subjective, and may not reflect how you personally feel about the artwork.")
 
 ########## Streamlit layout ##########
 
