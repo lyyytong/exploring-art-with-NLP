@@ -230,8 +230,8 @@ st.sidebar.title(' ')
 st.sidebar.title('Filters')
 with st.sidebar.beta_expander("🍺 Consensus Scale"):
     min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=3)
-    st.write("With 3 as default setting, if your predicted sentiment is 'excitement', only artworks with at least 3 people labeling them with 'excitement' will be shown.")
-    st.write("The higher you go, the more people have to agree the artwork evokes your predicted sentiment for it to be shown, but the smaller the result pool will be.")
+    st.write("With 3 as default setting, if your predicted sentiment is 'awe', only artworks with at least 3 people labeling them with 'awe' will be shown.")
+    st.write("The higher you go, the more likely it is you'll see artworks that are *typically* associated with the sentiment, but the smaller your result pool will be.")
 with st.sidebar.beta_expander(("🔎 Advanced Search")):
     artists = st.multiselect('Choose artists', artist_list)
     styles = st.multiselect('Choose styles', style_list)
@@ -247,34 +247,30 @@ if texts:
     result_dict = {}
     for pct, index in zip(pred[0], range(len(pred[0]))):
         result_dict[index] = pct
-    
+
     # Get top 3 highest proba and their labels
     tops = sorted(result_dict, key=result_dict.get, reverse=True)[:3]
-    
-    top_1 = labels[tops[0]]
-    top_1_pct = pred[0][tops[0]]*100
-    top_1_text = f"{top_1} ({'%.0f%%'%top_1_pct})"
 
-    top_2 = labels[tops[1]]
-    top_2_pct = pred[0][tops[1]]*100
-    top_2_text = f"{top_2} ({'%.0f%%'%top_2_pct})"
-
-    top_3 = labels[tops[2]]
-    top_3_pct = pred[0][tops[2]]*100
-    top_3_text = f"{top_3} ({'%.0f%%'%top_3_pct})"
+    buttons = []
+    for i in tops:
+        button = {}
+        button['emotion'] = labels[i]
+        proba = pred[0][i]*100
+        button['display_text'] = f"{button['emotion']} ({'%.0f%%'%proba})"
+        buttons.append(button)
     
     # Get selection of sentiment to show artwork of
     st.write('That sounds like...')
-    button_1 = st.button(top_1_text)
-    button_2 = st.button(top_2_text)
-    button_3 = st.button(top_3_text)
+    button_1 = st.button(buttons[0]['display_text'])
+    button_2 = st.button(buttons[1]['display_text'])
+    button_3 = st.button(buttons[2]['display_text'])
 
     st.text("% is how confident the model is of each prediction.")
     st.text("Click button to see an artwork evoking that emotion.")
 
     if button_1:
-        show_results(top_1, artists, styles, min_votes)
+        show_results(buttons[0]['emotion'], artists, styles, min_votes)
     if button_2:
-        show_results(top_2, artists, styles, min_votes)
+        show_results(buttons[1]['emotion'], artists, styles, min_votes)
     if button_3:
-        show_results(top_3, artists, styles, min_votes)
+        show_results(buttons[2]['emotion'], artists, styles, min_votes)
