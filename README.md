@@ -1,4 +1,4 @@
-# Explore Art with NLP
+# Explore Art with NLP [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/lyyytong/exploring-art-with-nlp)
 
 ## Objective
 
