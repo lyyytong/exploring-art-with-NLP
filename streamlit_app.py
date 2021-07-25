@@ -42,7 +42,7 @@ def query_df(emotion, artists, styles, min_votes):
         results = filtered_count[filtered_count['count']>= min_votes]
         if results.empty:
             min_votes = filtered_count['count'].max()
-            message = f'No artworks found. Please lower the consensus scale. Getting an artwork at max available value ({min_votes}) for now.'
+            message = f'No artworks found. Please lower the Wisdom of Crowds scale. Getting an artwork at max available value ({min_votes}) for now.'
         else:
             message = ''
 
@@ -229,7 +229,7 @@ with st.sidebar.beta_expander("📩 Contact"):
     "lyyytong@gmail.com"
 st.sidebar.title(' ')
 st.sidebar.title('Filters')
-with st.sidebar.beta_expander("🍺 Consensus Scale"):
+with st.sidebar.beta_expander("🧐 Wisdom of Crowds"):
     min_votes = st.slider("Votes per label", min_value=1, max_value=20, value=3)
     st.write("With 3 as default setting, if your predicted sentiment is 'awe', only artworks with at least 3 people labeling them with 'awe' will be shown.")
     st.write("The higher you go, the more likely it is you'll see artworks that are *typically* associated with the sentiment, but the smaller your result pool will be.")
